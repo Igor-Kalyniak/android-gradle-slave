@@ -1,23 +1,3 @@
-# Copyright 2020 EPAM Systems.
-
-
-
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-# http://www.apache.org/licenses/LICENSE-2.0
-
-
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-
-
-
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 FROM epamedp/edp-jenkins-base-agent:1.0.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -25,7 +5,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV GRADLE_VERSION=6.1.1 \
     ANDROID_SDK_VERSION=6609375 \
     ANDROID_SDK_ROOT=/opt/android-sdk \ 
-    RUBY_VERSION=2.7.0
+    RUBY_VERSION=2.6
 
 USER root
 
@@ -59,8 +39,12 @@ ENV LD_LIBRARY_PATH ${ANDROID_SDK_ROOT}/emulator/lib64:${ANDROID_SDK_ROOT}/emula
 ENV QTWEBENGINE_DISABLE_SANDBOX 1
 
 # Install Ruby packages
-RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
-    yum install -y --setopt=tsflags=nodocs ruby ruby-devel && \
+RUN gpg2 --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB && \
+    curl -L get.rvm.io | bash -s stable && \
+    source /etc/profile.d/rvm.sh && \
+    echo "source /etc/profile.d/rvm.sh" >> /home/jenkins/.bashrc && \
+    rvm install ${RUBY_VERSION} && \
+    rvm use ${RUBY_VERSION} --default && \
     gem install fastlane -NV
 
 WORKDIR $HOME/.gradle
