@@ -61,6 +61,9 @@ RUN wget https://rvm.io/binaries/centos/7/x86_64/ruby-${RUBY_VERSION}.tar.bz2 &&
 WORKDIR $HOME/.gradle
 
 RUN chown -R "1001:0" "$HOME" && \
+    chown -R "1001:0" "/usr/local/lib/ruby/gems/2.5.0" && \
     chmod -R "g+rw" "$HOME"
+
+USER 1001
 
 USER 1001
